@@ -1,5 +1,7 @@
 # 📊 Internship Application Analytics Dashboard
 
+### 🔗 [📊 View Live Dashboard](https://sahimagupta.github.io/internship-analytics/)
+
 An interactive R dashboard analyzing **478 female internship applications** submitted to the Ministry of Women & Child Development (WCD) internship programme, covering **28 Indian states** across **6 zones**.
 
 ## 🔍 Key Findings
