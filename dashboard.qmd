@@ -1,0 +1,387 @@
+---
+title: "Internship Application Analytics"
+subtitle: "Analysis of Female Internship Applications — Ministry of Women & Child Development"
+author: "Sahima Gupta"
+format:
+  dashboard:
+    orientation: columns
+    theme: flatly
+    nav-buttons:
+      - icon: github
+        href: https://github.com/sahimagupta/internship-analytics
+---
+
+```{r setup, include=FALSE}
+# Load required packages
+library(tidyverse)
+library(plotly)
+library(DT)
+library(scales)
+
+# Load cleaned data
+df <- read_csv("data/cleaned/applications_clean.csv", show_col_types = FALSE)
+state_df <- read_csv("data/cleaned/state_summary.csv", show_col_types = FALSE)
+zone_df <- read_csv("data/cleaned/zone_summary.csv", show_col_types = FALSE)
+
+# Color palette — warm, professional colors
+colors_main <- c("#E63946", "#457B9D", "#2A9D8F", "#E9C46A", "#F4A261", "#264653")
+colors_zone <- c("Central" = "#E63946", "Eastern" = "#457B9D", "Northern" = "#2A9D8F",
+                 "Western" = "#E9C46A", "Southern" = "#F4A261", "North Eastern" = "#264653")
+```
+
+# 📊 Overview
+
+## Row {height=20%}
+
+### Total Applications
+```{r}
+#| content: valuebox
+#| title: "Total Applications"
+list(icon = "people-fill", color = "primary", value = nrow(df))
+```
+
+### States Represented
+```{r}
+#| content: valuebox
+#| title: "States Represented"
+list(icon = "geo-alt-fill", color = "success", value = n_distinct(df$state))
+```
+
+### Average Age
+```{r}
+#| content: valuebox
+#| title: "Average Age"
+list(icon = "calendar-heart", color = "info", value = paste0(round(mean(df$age), 1), " years"))
+```
+
+### Rural Applicants
+```{r}
+#| content: valuebox
+#| title: "Rural Applicants"
+rural_pct <- round(sum(df$area_type == "Rural", na.rm = TRUE) / nrow(df) * 100, 1)
+list(icon = "tree-fill", color = "warning", value = paste0(rural_pct, "%"))
+```
+
+### Hostel Required
+```{r}
+#| content: valuebox
+#| title: "Need Hostel"
+hostel_pct <- round(sum(df$hostel_required == "Yes") / nrow(df) * 100, 1)
+list(icon = "house-door-fill", color = "danger", value = paste0(hostel_pct, "%"))
+```
+
+## Row
+
+### State-wise Applications {width=60%}
+```{r}
+# Top 15 states by application count
+top_states <- state_df %>%
+  slice_max(total_applicants, n = 15) %>%
+  mutate(state = fct_reorder(state, total_applicants))
+
+p <- ggplot(top_states, aes(x = total_applicants, y = state, fill = zone)) +
+  geom_col(width = 0.7) +
+  geom_text(aes(label = total_applicants), hjust = -0.2, size = 3.2) +
+  scale_fill_manual(values = colors_zone) +
+  labs(x = "Number of Applications", y = NULL, fill = "Zone",
+       title = "Top 15 States by Application Count") +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom",
+        plot.title = element_text(face = "bold"))
+
+ggplotly(p, tooltip = c("x", "fill")) %>%
+  layout(legend = list(orientation = "h", y = -0.15))
+```
+
+### Zone Distribution {width=40%}
+```{r}
+zone_df_plot <- zone_df %>%
+  mutate(zone = fct_reorder(zone, total_applicants))
+
+p <- plot_ly(zone_df_plot, labels = ~zone, values = ~total_applicants,
+             type = "pie",
+             marker = list(colors = colors_main),
+             textposition = "inside",
+             textinfo = "label+percent",
+             hoverinfo = "label+value+percent") %>%
+  layout(title = list(text = "Applications by Zone", font = list(size = 14)),
+         showlegend = TRUE,
+         legend = list(orientation = "h", y = -0.1))
+p
+```
+
+## Row
+
+### Age Distribution {width=50%}
+```{r}
+p <- ggplot(df, aes(x = age)) +
+  geom_histogram(binwidth = 1, fill = "#457B9D", color = "white", alpha = 0.85) +
+  geom_vline(xintercept = mean(df$age), linetype = "dashed", color = "#E63946", linewidth = 0.8) +
+  annotate("text", x = mean(df$age) + 1.5, y = Inf, vjust = 2,
+           label = paste0("Mean: ", round(mean(df$age), 1)), color = "#E63946", fontface = "bold") +
+  labs(x = "Age (years)", y = "Number of Applicants",
+       title = "Age Distribution of Applicants") +
+  theme_minimal(base_size = 12) +
+  theme(plot.title = element_text(face = "bold"))
+
+ggplotly(p, tooltip = c("x", "y"))
+```
+
+### Rural vs Urban {width=50%}
+```{r}
+rural_zone <- df %>%
+  count(zone, area_type) %>%
+  group_by(zone) %>%
+  mutate(pct = round(n / sum(n) * 100, 1)) %>%
+  ungroup()
+
+p <- ggplot(rural_zone, aes(x = zone, y = n, fill = area_type)) +
+  geom_col(position = "dodge", width = 0.7) +
+  geom_text(aes(label = paste0(pct, "%")), position = position_dodge(width = 0.7),
+            vjust = -0.5, size = 3) +
+  scale_fill_manual(values = c("Rural" = "#2A9D8F", "Urban" = "#E9C46A")) +
+  labs(x = "Zone", y = "Number of Applicants", fill = "Area",
+       title = "Rural vs Urban Split by Zone") +
+  theme_minimal(base_size = 12) +
+  theme(plot.title = element_text(face = "bold"),
+        legend.position = "bottom")
+
+ggplotly(p, tooltip = c("x", "y", "fill")) %>%
+  layout(legend = list(orientation = "h", y = -0.15))
+```
+
+
+# 🎓 Education
+
+## Row {height=20%}
+
+### Graduates
+```{r}
+#| content: valuebox
+#| title: "Graduates"
+grad_n <- sum(df$degree_type == "Graduate", na.rm = TRUE)
+list(icon = "mortarboard-fill", color = "primary", value = grad_n)
+```
+
+### Post Graduates
+```{r}
+#| content: valuebox
+#| title: "Post Graduates"
+pg_n <- sum(df$degree_type == "Post Graduate", na.rm = TRUE)
+list(icon = "award-fill", color = "success", value = pg_n)
+```
+
+### Avg Score
+```{r}
+#| content: valuebox
+#| title: "Avg Score (%)"
+avg_score <- round(mean(df$percentage_clean, na.rm = TRUE), 1)
+list(icon = "graph-up-arrow", color = "info", value = paste0(avg_score, "%"))
+```
+
+### Students
+```{r}
+#| content: valuebox
+#| title: "Student Applicants"
+student_n <- sum(df$applicant_category == "Student", na.rm = TRUE)
+list(icon = "book-fill", color = "warning", value = student_n)
+```
+
+## Row
+
+### Degree Type Distribution {width=40%}
+```{r}
+degree_data <- df %>%
+  filter(degree_type != "Not Specified") %>%
+  count(degree_type) %>%
+  mutate(degree_type = fct_reorder(degree_type, n))
+
+p <- plot_ly(degree_data, labels = ~degree_type, values = ~n,
+             type = "pie", hole = 0.5,
+             marker = list(colors = c("#457B9D", "#E63946", "#2A9D8F")),
+             textposition = "outside",
+             textinfo = "label+value+percent") %>%
+  layout(title = list(text = "Degree Type Distribution", font = list(size = 14)),
+         showlegend = FALSE,
+         annotations = list(text = paste0(sum(degree_data$n), "\nTotal"),
+                           showarrow = FALSE, font = list(size = 16)))
+p
+```
+
+### Top Qualifications {width=60%}
+```{r}
+qual_top <- df %>%
+  filter(qualification_clean != "Not Specified") %>%
+  count(qualification_clean, sort = TRUE) %>%
+  slice_head(n = 12) %>%
+  mutate(qualification_clean = fct_reorder(qualification_clean, n))
+
+p <- ggplot(qual_top, aes(x = n, y = qualification_clean, fill = n)) +
+  geom_col(width = 0.7) +
+  geom_text(aes(label = n), hjust = -0.2, size = 3.2) +
+  scale_fill_gradient(low = "#E9C46A", high = "#E63946", guide = "none") +
+  labs(x = "Number of Applicants", y = NULL,
+       title = "Top 12 Qualifications") +
+  theme_minimal(base_size = 12) +
+  theme(plot.title = element_text(face = "bold"))
+
+ggplotly(p, tooltip = c("x", "y"))
+```
+
+## Row
+
+### Academic Performance Distribution {width=50%}
+```{r}
+perf_data <- df %>%
+  filter(!is.na(percentage_clean), percentage_clean > 0, percentage_clean <= 100)
+
+p <- ggplot(perf_data, aes(x = percentage_clean)) +
+  geom_histogram(binwidth = 5, fill = "#2A9D8F", color = "white", alpha = 0.85) +
+  geom_vline(xintercept = mean(perf_data$percentage_clean, na.rm = TRUE),
+             linetype = "dashed", color = "#E63946", linewidth = 0.8) +
+  labs(x = "Aggregate Percentage / CGPA (converted)", y = "Count",
+       title = "Academic Performance Distribution") +
+  theme_minimal(base_size = 12) +
+  theme(plot.title = element_text(face = "bold"))
+
+ggplotly(p, tooltip = c("x", "y"))
+```
+
+### Performance by Zone {width=50%}
+```{r}
+perf_zone <- df %>%
+  filter(!is.na(percentage_clean), percentage_clean > 0, percentage_clean <= 100)
+
+p <- ggplot(perf_zone, aes(x = zone, y = percentage_clean, fill = zone)) +
+  geom_boxplot(alpha = 0.7, outlier.alpha = 0.3) +
+  scale_fill_manual(values = colors_zone, guide = "none") +
+  labs(x = "Zone", y = "Aggregate Percentage",
+       title = "Academic Scores by Zone") +
+  theme_minimal(base_size = 12) +
+  theme(plot.title = element_text(face = "bold"))
+
+ggplotly(p, tooltip = c("x", "y"))
+```
+
+
+# 🗺️ Regional
+
+## Row
+
+### Zone-wise Metrics {width=50%}
+```{r}
+zone_table <- zone_df %>%
+  select(
+    Zone = zone,
+    Applicants = total_applicants,
+    `Avg Age` = avg_age,
+    `Rural %` = rural_pct,
+    `Hostel %` = hostel_needed_pct,
+    `Avg Score` = avg_percentage,
+    `Students %` = students_pct
+  )
+
+datatable(zone_table, rownames = FALSE,
+          options = list(dom = "t", pageLength = 10,
+                        columnDefs = list(list(className = "dt-center", targets = "_all"))),
+          class = "display compact") %>%
+  formatStyle("Applicants", fontWeight = "bold") %>%
+  formatStyle("Rural %",
+              background = styleColorBar(zone_table$`Rural %`, "#2A9D8F"),
+              backgroundSize = "90% 70%", backgroundRepeat = "no-repeat",
+              backgroundPosition = "center")
+```
+
+### Hostel Requirement by Zone {width=50%}
+```{r}
+hostel_zone <- df %>%
+  count(zone, hostel_required) %>%
+  group_by(zone) %>%
+  mutate(pct = round(n / sum(n) * 100, 1)) %>%
+  ungroup()
+
+p <- ggplot(hostel_zone, aes(x = zone, y = n, fill = hostel_required)) +
+  geom_col(position = "fill", width = 0.7) +
+  geom_text(aes(label = paste0(pct, "%")),
+            position = position_fill(vjust = 0.5), size = 3.2, color = "white") +
+  scale_fill_manual(values = c("Yes" = "#E63946", "No" = "#457B9D")) +
+  scale_y_continuous(labels = percent) +
+  labs(x = "Zone", y = "Proportion", fill = "Hostel\nRequired",
+       title = "Hostel Requirement by Zone") +
+  theme_minimal(base_size = 12) +
+  theme(plot.title = element_text(face = "bold"),
+        legend.position = "bottom")
+
+ggplotly(p, tooltip = c("x", "fill", "y")) %>%
+  layout(legend = list(orientation = "h", y = -0.15))
+```
+
+## Row
+
+### State-wise Details {width=100%}
+```{r}
+state_table <- state_df %>%
+  select(
+    State = state,
+    Zone = zone,
+    Total = total_applicants,
+    `Avg Age` = avg_age,
+    Rural = rural_count,
+    Urban = urban_count,
+    `Rural %` = rural_pct,
+    `Hostel %` = hostel_needed_pct,
+    `Avg Score` = avg_percentage
+  )
+
+datatable(state_table, rownames = FALSE,
+          filter = "top",
+          extensions = "Buttons",
+          options = list(
+            dom = "Bfrtip",
+            buttons = c("copy", "csv", "excel"),
+            pageLength = 15,
+            order = list(list(2, "desc")),
+            columnDefs = list(list(className = "dt-center", targets = "_all"))
+          ),
+          class = "display compact stripe") %>%
+  formatStyle("Total", fontWeight = "bold",
+              background = styleColorBar(state_table$Total, "#457B9D"),
+              backgroundSize = "90% 70%", backgroundRepeat = "no-repeat",
+              backgroundPosition = "center")
+```
+
+
+# 📋 Data Explorer
+
+## Row
+
+### Full Application Data {width=100%}
+```{r}
+explorer_data <- df %>%
+  select(
+    Name = name,
+    Age = age,
+    `Age Group` = age_group,
+    State = state,
+    Zone = zone,
+    Area = area_type,
+    Category = applicant_category,
+    `Degree Type` = degree_type,
+    Qualification = qualification_clean,
+    `Score (%)` = percentage_clean,
+    Performance = performance_band,
+    Hostel = hostel_required,
+    Institution = institution
+  )
+
+datatable(explorer_data, rownames = FALSE,
+          filter = "top",
+          extensions = "Buttons",
+          options = list(
+            dom = "Bfrtip",
+            buttons = c("copy", "csv", "excel"),
+            pageLength = 20,
+            scrollX = TRUE
+          ),
+          class = "display compact stripe hover")
+```
