@@ -9,9 +9,9 @@
 
 ## 📖 The Story Behind This Project
 
-India's **Ministry of Women & Child Development (WCD)** runs an internship programme designed to provide hands-on policy experience to young women across the country. Every cycle, hundreds of women — students, scholars, teachers, and social activists — apply for a chance to work within the Ministry and contribute to India's social welfare agenda.
+India's **Ministry of Women & Child Development (WCD)** runs an internship programme designed to provide hands on policy experience to young women across the country. Every cycle, hundreds of women students, scholars, teachers, and social activists apply for a chance to work within the Ministry and contribute to India's social welfare agenda.
 
-This project analyzes **478 female internship applications** from the Feb-Mar intake cycle, spanning **28 Indian states** and **6 geographic zones**. The goal is to understand **who these women are** — where they come from, what they study, how they perform academically, and what support they need.
+This project analyzes **478 female internship applications** from the Feb-Mar intake cycle, spanning **28 Indian states** and **6 geographic zones**. The goal is to understand **who these women are** where they come from, what they study, how they perform academically, and what support they need.
 
 The findings reveal fascinating patterns about **women's participation in government programmes**, the **rural-urban divide**, and the **educational landscape** of India's aspiring policy professionals.
 
@@ -20,15 +20,15 @@ The findings reveal fascinating patterns about **women's participation in govern
 ## 🔍 Key Findings
 
 ### 🗺️ Geographic Concentration
-- **Uttar Pradesh dominates** with 116 applications (24.3%) — nearly 1 in 4 applicants comes from UP
+- **Uttar Pradesh dominates** with 116 applications (24.3%) nearly 1 in 4 applicants comes from UP
 - **Central Zone** leads with 37.2% of all applications, followed by Eastern (19.7%) and Northern (14.6%)
 - The **North-Eastern states** are significantly underrepresented with only 17 applications (3.6%)
 - Top 5 states (UP, Maharashtra, Haryana, MP, Bihar) account for **60% of all applications**
 
 ### 🏘️ Rural Participation
-- **47.7% applicants are from rural areas** — a remarkably strong rural turnout
+- **47.7% applicants are from rural areas** a remarkably strong rural turnout
 - This challenges the assumption that government internships attract only urban candidates
-- Rural participation varies significantly by zone — **Eastern zone has the highest rural percentage**
+- Rural participation varies significantly by zone **Eastern zone has the highest rural percentage**
 
 ### 🎓 Education Profile
 - Nearly equal split: **47.6% Graduates** and **49.7% Post-Graduates**
@@ -37,7 +37,7 @@ The findings reveal fascinating patterns about **women's participation in govern
 - Average academic score is **66.5%**, with significant variation across zones
 
 ### 🏠 Hostel Requirement
-- **79.5% applicants need hostel facilities** — a critical infrastructure insight
+- **79.5% applicants need hostel facilities** a critical infrastructure insight
 - This indicates most applicants would relocate for the internship
 - Rural applicants are more likely to need hostel accommodation
 - This finding has direct policy implications for programme planning
@@ -52,16 +52,16 @@ The findings reveal fascinating patterns about **women's participation in govern
 ## 📊 Dashboard Pages
 
 ### Page 1: Overview
-The landing page presents the big picture — total applications, state-wise distribution, zone breakdown, age histogram, and the rural-urban split across zones. Interactive Plotly charts allow you to hover over any data point for details.
+The landing page presents the big picture total applications, state-wise distribution, zone breakdown, age histogram, and the rural-urban split across zones. Interactive Plotly charts allow you to hover over any data point for details.
 
 ### Page 2: Education
-Deep dive into the educational background — degree type distribution (Graduate vs Post-Graduate), top 12 qualifications, academic performance histogram, and box plots comparing scores across zones.
+Deep dive into the educational background  degree type distribution (Graduate vs Post-Graduate), top 12 qualifications, academic performance histogram, and box plots comparing scores across zones.
 
 ### Page 3: Regional Analysis
-Zone-wise metrics table with color-coded bars, hostel requirement breakdown by zone, and a detailed state-level table with filters and export options (CSV/Excel).
+Zone-wise metrics table with color-coded bars, hostel requirement breakdown by zone, and a detailed state level table with filters and export options (CSV/Excel).
 
 ### Page 4: Data Explorer
-The full cleaned dataset in a searchable, sortable, and exportable DataTable. Filter by any column — name, state, zone, qualification, performance band — and export the filtered results.
+The full cleaned dataset in a searchable, sortable, and exportable DataTable. Filter by any column name, state, zone, qualification, performance band and export the filtered results.
 
 ---
 
@@ -105,7 +105,7 @@ internship-analytics/
 
 ### Data Cleaning Highlights
 - **Qualification normalization**: 200+ raw qualification strings mapped to 15 standardized categories using regex pattern matching
-- **Score standardization**: Mixed CGPA (scale of 10) and percentage values unified — CGPA automatically converted to approximate percentage
+- **Score standardization**: Mixed CGPA (scale of 10) and percentage values unified CGPA automatically converted to approximate percentage
 - **Performance banding**: Continuous scores categorized into Distinction, First Class, Second Class, Pass, and Below Average
 - **Geographic enrichment**: State-to-zone mapping, rural/urban classification
 
@@ -124,11 +124,11 @@ Internship application records from the **Ministry of Women & Child Development 
 
 ## 💡 Insights for Policy
 
-1. **Expand outreach in North-Eastern states** — only 3.6% representation despite significant population
-2. **Hostel infrastructure is critical** — 4 out of 5 applicants need accommodation
-3. **Rural women are participating** — nearly half the applicants are from rural areas, suggesting strong demand
-4. **Law and social science students dominate** — the programme naturally attracts policy-interested candidates
-5. **Age diversity exists** — while most are 22-24, applicants range from 19 to 49, including working professionals
+1. **Expand outreach in North-Eastern states** only 3.6% representation despite significant population
+2. **Hostel infrastructure is critical** 4 out of 5 applicants need accommodation
+3. **Rural women are participating** nearly half the applicants are from rural areas, suggesting strong demand
+4. **Law and social science students dominate** the programme naturally attracts policy-interested candidates
+5. **Age diversity exists** while most are 22-24, applicants range from 19 to 49, including working professionals
 
 ---
 
