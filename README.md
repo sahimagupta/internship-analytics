@@ -16,10 +16,9 @@ This project analyzes **478 female internship applications** from the Feb-Mar in
 The findings reveal fascinating patterns about **women's participation in government programmes**, the **rural-urban divide**, and the **educational landscape** of India's aspiring policy professionals.
 
 ---
-##📌 Research Question
+## 📌 Research Question
 
-
-Who are the women applying for the Ministry of Women & Child Development internship programme, and what patterns exist in their participation?
+> **Who are the women applying for the Ministry of Women & Child Development internship programme, and what patterns exist in their participation?**
 
 ## 🔍 Key Findings
 
